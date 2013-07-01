@@ -1,4 +1,4 @@
 youtubecontrols
 ===============
 
-GoogleChrome extension to toggle the play state on html5 videos quickly
+GoogleChrome extension to control YouTube html5 videos quickly
