@@ -35,26 +35,19 @@
       },
       "description": "Toggle play/pause"
     },
-	"volumeUp": {
-      "suggested_key": {
-        "default": "Alt+K",
-        "mac": "Alt+K"
-      },
-      "description": "Increase volume by 10%"
-    },
-	"volumeDown": {
-      "suggested_key": {
-        "default": "Alt+J",
-        "mac": "Alt+J"
-      },
-      "description": "Decrease volume by 10%"
-    },
 	"playlistNext": {
       "suggested_key": {
         "default": "Alt+L",
         "mac": "Alt+L"
       },
       "description": "Play the next video in the playlist"
+    },
+	"playlistPrevious": {
+      "suggested_key": {
+        "default": "Alt+H",
+        "mac": "Alt+H"
+      },
+      "description": "Play the previous video in the playlist"
     }
   }
 }
