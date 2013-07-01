@@ -35,14 +35,14 @@
       },
       "description": "Toggle play/pause"
     },
-	"playlistNext": {
+    "playlistNext": {
       "suggested_key": {
         "default": "Alt+L",
         "mac": "Alt+L"
       },
       "description": "Play the next video in the playlist"
     },
-	"playlistPrevious": {
+    "playlistPrevious": {
       "suggested_key": {
         "default": "Alt+H",
         "mac": "Alt+H"
