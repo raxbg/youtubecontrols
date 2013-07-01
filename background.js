@@ -31,6 +31,50 @@ function togglePlayPause(tab) {
 	}
 }
 
+function volumeUp() {
+	if (ytbActiveTabs.length == 0) {
+		return;
+	}
+
+	var lastTabIndex = ytbActiveTabs.length - 1;
+	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+	
+	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'videoObj.volume += 0.1;'}, function(rsponse){});
+}
+
+function volumeDown() {
+	if (ytbActiveTabs.length == 0) {
+		return;
+	}
+
+	var lastTabIndex = ytbActiveTabs.length - 1;
+	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+	
+	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'videoObj.volume -= 0.1;'}, function(rsponse){});
+}
+
+function playNext() {
+	if (ytbActiveTabs.length == 0) {
+		return;
+	}
+
+	var lastTabIndex = ytbActiveTabs.length - 1;
+	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+	
+	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'if (playlist) {document.getElementById(\'watch7-playlist-bar-next-button\').click();}'}, function(rsponse){});
+}
+
+function playPrevious() {
+	if (ytbActiveTabs.length == 0) {
+		return;
+	}
+
+	var lastTabIndex = ytbActiveTabs.length - 1;
+	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+	
+	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'if (playlist) {document.getElementById(\'watch7-playlist-bar-prev-button\').click();}'}, function(rsponse){});
+}
+
 function updateIcon() {
 	if (ytbActiveTabs.length == 0) {
 		chrome.browserAction.setIcon({path: 'y_inactive.png'}, function(){});
@@ -116,5 +160,13 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 chrome.commands.onCommand.addListener(function(command) {
 	if (command == 'toggle-play-pause') {
 		togglePlayPause(null);
+	} else if (command == 'volumeUp') {
+		volumeUp();
+	} else if (command == 'volumeDown') {
+		volumeDown();
+	} else if (command == 'playlistNext') {
+		playNext();
+	}  else if (command == 'playlistPrevious') {
+		playPrevious();
 	}
 });
