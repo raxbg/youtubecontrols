@@ -1,4 +1,6 @@
 var ytbActiveTabs = [];
+var popupInjectedTabs = [];
+
 var stateIcons = {
 	paused: 'y_play.png',
 	ended: 'y_play.png',
@@ -144,12 +146,22 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 			updateTitle();
 		}
 	}
+	
+	var tabIndex = popupInjectedTabs.indexOf(tabId);
+	if (tabIndex != -1) {
+		popupInjectedTabs.splice(tabIndex, 1);
+	}
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info) {
 	if (discardTab(tabId)) {
 		updateIcon();
 		updateTitle();
+	}
+	
+	var tabIndex = popupInjectedTabs.indexOf(tabId);
+	if (tabIndex != -1) {
+		popupInjectedTabs.splice(tabIndex, 1);
 	}
 });
 
@@ -160,13 +172,23 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 chrome.commands.onCommand.addListener(function(command) {
 	if (command == 'toggle-play-pause') {
 		togglePlayPause(null);
+	} else if (command == 'abc') {
+		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+			chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControls.js'}, function(res){});
+			
+			if (popupInjectedTabs.indexOf(tabs[0].id) == -1) {
+				chrome.tabs.insertCSS(tabs[0].id, {file: 'extendedControls.css'}, function(res){});
+				chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControlsEvents.js'}, function(res){});
+				popupInjectedTabs.push(tabs[0].id);
+			}
+		});
 	} else if (command == 'volumeUp') {
 		volumeUp();
 	} else if (command == 'volumeDown') {
 		volumeDown();
 	} else if (command == 'playlistNext') {
 		playNext();
-	}  else if (command == 'playlistPrevious') {
+	} else if (command == 'playlistPrevious') {
 		playPrevious();
 	}
 });

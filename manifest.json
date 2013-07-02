@@ -48,6 +48,13 @@
         "mac": "Alt+H"
       },
       "description": "Play the previous video in the playlist"
+    },
+    "abc": {
+      "suggested_key": {
+        "default": "Alt+K",
+        "mac": "Alt+K"
+      },
+      "description": "Toggle the extended controls popup"
     }
   }
 }
