@@ -1,5 +1,6 @@
 var ytbActiveTabs = [];
 var popupInjectedTabs = [];
+var lastPopupTab = 0;
 
 var stateIcons = {
 	paused: 'y_play.png',
@@ -118,6 +119,27 @@ function updateYtbTabState(tabId, state) {
 	}
 }
 
+function populatePopup() {
+	if (ytbActiveTabs.length == 0) {
+		//chrome.tabs.executeScript(lastPopupTab, {code: 'addPopupItem(JSON.stringify({title:"No youtube tabs", controls: "false"}));'}, function(reponse){});
+	}
+}
+
+function showExtendedControls() {
+	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControls.js'}, function(res){});
+
+		if (popupInjectedTabs.indexOf(tabs[0].id) == -1) {
+			chrome.tabs.insertCSS(tabs[0].id, {file: 'extendedControls.css'}, function(res){});
+			chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControlsEvents.js'}, function(res){});
+			popupInjectedTabs.push(tabs[0].id);
+		}
+
+		lastPopupTab = tabs[0].id;
+		populatePopup();
+	});
+}
+
 chrome.browserAction.setTitle({title: 'Not active'});
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
@@ -173,15 +195,7 @@ chrome.commands.onCommand.addListener(function(command) {
 	if (command == 'toggle-play-pause') {
 		togglePlayPause(null);
 	} else if (command == 'abc') {
-		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-			chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControls.js'}, function(res){});
-			
-			if (popupInjectedTabs.indexOf(tabs[0].id) == -1) {
-				chrome.tabs.insertCSS(tabs[0].id, {file: 'extendedControls.css'}, function(res){});
-				chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControlsEvents.js'}, function(res){});
-				popupInjectedTabs.push(tabs[0].id);
-			}
-		});
+		showExtendedControls();
 	} else if (command == 'volumeUp') {
 		volumeUp();
 	} else if (command == 'volumeDown') {
