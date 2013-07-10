@@ -120,23 +120,28 @@ function updateYtbTabState(tabId, state) {
 }
 
 function populatePopup() {
-	if (ytbActiveTabs.length == 0) {
-		//chrome.tabs.executeScript(lastPopupTab, {code: 'addPopupItem(JSON.stringify({title:"No youtube tabs", controls: "false"}));'}, function(reponse){});
+	if (ytbActiveTabs.length > 0) {
+		chrome.tabs.executeScript(lastPopupTab, {code: 'addPopupItem(JSON.stringify({title:"No youtube tabs", controls: "false"}));'}, function(reponse){});
 	}
 }
 
 function showExtendedControls() {
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControls.js'}, function(res){});
+		lastPopupTab = tabs[0].id;
 
 		if (popupInjectedTabs.indexOf(tabs[0].id) == -1) {
 			chrome.tabs.insertCSS(tabs[0].id, {file: 'extendedControls.css'}, function(res){});
-			chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControlsEvents.js'}, function(res){});
+			chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControlsEvents.js'}, function(res){
+				chrome.tabs.executeScript(lastPopupTab, {file: 'extendedControls.js'}, function(res){
+					populatePopup();
+				});
+			});
 			popupInjectedTabs.push(tabs[0].id);
+		} else {
+			chrome.tabs.executeScript(lastPopupTab, {file: 'extendedControls.js'}, function(res){
+				populatePopup();
+			});
 		}
-
-		lastPopupTab = tabs[0].id;
-		populatePopup();
 	});
 }
 

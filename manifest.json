@@ -20,6 +20,11 @@
       "matches" : ["http://www.youtube.com/watch*", "https://www.youtube.com/watch*"],
       "js" : ["contentscript.js"],
       "run_at" : "document_end"
+    },
+    {
+      "matches" : ["http://*/*", "https://*/*"],
+      "js" : ["commonEvents.js"],
+      "run_at" : "document_end"
     }
   ], 
   "permissions": [

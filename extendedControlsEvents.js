@@ -13,6 +13,8 @@ document.body.addEventListener('click', function(e){
 });
 
 function addPopupItem(item){
+	item = JSON.parse(item);
+	
 	var ytTab = document.createElement('li');
 	ytTab.innerHTML = '<span><h3 class="ytControlsPopupItemTitle">' + item.title + '</h3>';
 	if (item.controls) {

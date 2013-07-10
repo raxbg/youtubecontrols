@@ -28,7 +28,3 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 
 	sendResponse();
 });
-
-window.addEventListener('message', function(e){
-	console.log('click');
-});
