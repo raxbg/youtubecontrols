@@ -2,17 +2,13 @@ if (document.getElementById('youtubecontrolsOverlay') != null) {
 	document.getElementById('youtubecontrolsOverlay').remove();
 }
 
-var overlay = document.createElement('div');
-var popupBox = document.createElement('div');
-var popupItemList = document.createElement('ul');
+var ytcOverlay = document.createElement('div');
+var ytcDashboardItemList = document.createElement('ul');
 
-overlay.id = 'youtubecontrolsOverlay';
+ytcOverlay.id = 'youtubecontrolsOverlay';
 
-popupBox.id = 'youtubecontrolsPopupBox';
+ytcDashboardItemList.id = 'youtubecontrolsDashboardItemList';
 
-popupItemList.id = 'popupItemList';
+ytcOverlay.appendChild(ytcDashboardItemList);
 
-overlay.appendChild(popupBox);
-popupBox.appendChild(popupItemList);
-
-document.body.appendChild(overlay);
+document.body.appendChild(ytcOverlay);

@@ -43,7 +43,13 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 				if (playlist) {document.getElementById('watch7-playlist-bar-prev-button').click();}
 				break
 		}
+		sendResponse({});
+	} else if (msg.getDashboardInfo) {
+		var info = {};
+		info['title'] = document.getElementById('watch-headline-title').innerText;
+		info['image'] = 'http://img.youtube.com/vi/' + location.search.match(/v\=([^\&]*)/)[1] + '/0.jpg';
+		info['tabId'] = msg.tabId;
+		info['state'] = msg.state;
+		sendResponse(info);
 	}
-
-	sendResponse();
 });

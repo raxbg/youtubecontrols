@@ -121,7 +121,11 @@ function updateYtbTabState(tabId, state) {
 
 function populateDashboard() {
 	if (ytbActiveTabs.length > 0) {
-		chrome.tabs.executeScript(lastDashboardTab, {code: 'addPopupItem(JSON.stringify({title:"No youtube tabs", controls: "false"}));'}, function(reponse){});
+		for (x in ytbActiveTabs) {
+			chrome.tabs.sendMessage(ytbActiveTabs[x].tabId, {getDashboardInfo: true, tabId: ytbActiveTabs[x].tabId, state: ytbActiveTabs[x].state}, function(response){
+				chrome.tabs.executeScript(lastDashboardTab, {code: 'addPopupItem(JSON.stringify(' + JSON.stringify(response) + '));'}, function(reponse){});
+			});
+		}
 	}
 }
 
@@ -161,6 +165,16 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 		updateYtbTabState(sender.tab.id, msg.state);
 		updateIcon();
 		updateTitle();
+	} else if (msg.focusTab) {
+		chrome.tabs.update(msg.tabId, {active: true}, function(){});
+	} else if (msg.play) {
+		chrome.tabs.sendMessage(msg.tabId, {cmd: 'play'}, function(rsponse){});
+	} else if (msg.pause) {
+		chrome.tabs.sendMessage(msg.tabId, {cmd: 'pause'}, function(rsponse){});
+	} else if (msg.prev) {
+		chrome.tabs.sendMessage(msg.tabId, {cmd: 'playlistprev'}, function(rsponse){});
+	} else if (msg.next) {
+		chrome.tabs.sendMessage(msg.tabId, {cmd: 'playlistnext'}, function(rsponse){});
 	}
 
 	sendResponse();

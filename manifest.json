@@ -61,5 +61,12 @@
       },
       "description": "Toggle the extended controls popup"
     }
-  }
+  },
+  "web_accessible_resources": [
+    "images/focus_button.png",
+	"images/play_button.png",
+	"images/pause_button.png",
+	"images/prev_button.png",
+	"images/next_button.png"
+  ]
 }
