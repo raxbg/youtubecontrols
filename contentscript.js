@@ -23,7 +23,26 @@ if (document.getElementById('playlist').innerHTML.replace(/\s*/g, '').length > 0
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 	if(typeof msg.cmd != 'undefined' && (videoObj != null || playlist)) {
-		eval(msg.cmd);
+		switch (msg.cmd) {
+			case 'play':
+				videoObj.play();
+				break;
+			case 'pause': 
+				videoObj.pause();
+				break;
+			case 'volumeup':
+				videoObj.volume += 0.1;
+				break;
+			case 'volumedown':
+				videoObj.volume -= 0.1;
+				break;
+			case 'playlistnext':
+				if (playlist) {document.getElementById('watch7-playlist-bar-next-button').click();}
+				break;
+			case 'playlistprev':
+				if (playlist) {document.getElementById('watch7-playlist-bar-prev-button').click();}
+				break
+		}
 	}
 
 	sendResponse();

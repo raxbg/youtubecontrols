@@ -24,11 +24,11 @@ function togglePlayPause(tab) {
 	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
 
 	if (ytbActiveTabState == 'paused' || ytbActiveTabState == 'ended') {
-		chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'videoObj.play();'}, function(rsponse){});
+		chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'play'}, function(rsponse){});
 		updateIcon();
 		chrome.browserAction.setTitle({title: 'Pause'});
 	} else {
-		chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'videoObj.pause();'}, function(rsponse){});
+		chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'pause'}, function(rsponse){});
 		updateIcon();
 		chrome.browserAction.setTitle({title: 'Play'});
 	}
@@ -42,7 +42,7 @@ function volumeUp() {
 	var lastTabIndex = ytbActiveTabs.length - 1;
 	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
 	
-	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'videoObj.volume += 0.1;'}, function(rsponse){});
+	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'volumedown'}, function(rsponse){});
 }
 
 function volumeDown() {
@@ -53,7 +53,7 @@ function volumeDown() {
 	var lastTabIndex = ytbActiveTabs.length - 1;
 	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
 	
-	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'videoObj.volume -= 0.1;'}, function(rsponse){});
+	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'volumedown'}, function(rsponse){});
 }
 
 function playNext() {
@@ -64,7 +64,7 @@ function playNext() {
 	var lastTabIndex = ytbActiveTabs.length - 1;
 	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
 	
-	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'if (playlist) {document.getElementById(\'watch7-playlist-bar-next-button\').click();}'}, function(rsponse){});
+	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'playlistnext'}, function(rsponse){});
 }
 
 function playPrevious() {
@@ -75,7 +75,7 @@ function playPrevious() {
 	var lastTabIndex = ytbActiveTabs.length - 1;
 	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
 	
-	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'if (playlist) {document.getElementById(\'watch7-playlist-bar-prev-button\').click();}'}, function(rsponse){});
+	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'playlistprev'}, function(rsponse){});
 }
 
 function updateIcon() {
@@ -130,15 +130,15 @@ function showExtendedControls() {
 		lastPopupTab = tabs[0].id;
 
 		if (popupInjectedTabs.indexOf(tabs[0].id) == -1) {
-			chrome.tabs.insertCSS(tabs[0].id, {file: 'extendedControls.css'}, function(res){});
-			chrome.tabs.executeScript(tabs[0].id, {file: 'extendedControlsEvents.js'}, function(res){
-				chrome.tabs.executeScript(lastPopupTab, {file: 'extendedControls.js'}, function(res){
+			chrome.tabs.insertCSS(tabs[0].id, {file: 'dashboard.css'}, function(res){});
+			chrome.tabs.executeScript(tabs[0].id, {file: 'dashboardEvents.js'}, function(res){
+				chrome.tabs.executeScript(lastPopupTab, {file: 'dashboard.js'}, function(res){
 					populatePopup();
 				});
 			});
 			popupInjectedTabs.push(tabs[0].id);
 		} else {
-			chrome.tabs.executeScript(lastPopupTab, {file: 'extendedControls.js'}, function(res){
+			chrome.tabs.executeScript(lastPopupTab, {file: 'dashboard.js'}, function(res){
 				populatePopup();
 			});
 		}
