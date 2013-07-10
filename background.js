@@ -1,6 +1,6 @@
 var ytbActiveTabs = [];
-var popupInjectedTabs = [];
-var lastPopupTab = 0;
+var dashboardInjectedTabs = [];
+var lastDashboardTab = 0;
 
 var stateIcons = {
 	paused: 'y_play.png',
@@ -119,27 +119,27 @@ function updateYtbTabState(tabId, state) {
 	}
 }
 
-function populatePopup() {
+function populateDashboard() {
 	if (ytbActiveTabs.length > 0) {
-		chrome.tabs.executeScript(lastPopupTab, {code: 'addPopupItem(JSON.stringify({title:"No youtube tabs", controls: "false"}));'}, function(reponse){});
+		chrome.tabs.executeScript(lastDashboardTab, {code: 'addPopupItem(JSON.stringify({title:"No youtube tabs", controls: "false"}));'}, function(reponse){});
 	}
 }
 
-function showExtendedControls() {
+function showDashboard() {
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		lastPopupTab = tabs[0].id;
+		lastDashboardTab = tabs[0].id;
 
-		if (popupInjectedTabs.indexOf(tabs[0].id) == -1) {
+		if (dashboardInjectedTabs.indexOf(tabs[0].id) == -1) {
 			chrome.tabs.insertCSS(tabs[0].id, {file: 'dashboard.css'}, function(res){});
 			chrome.tabs.executeScript(tabs[0].id, {file: 'dashboardEvents.js'}, function(res){
-				chrome.tabs.executeScript(lastPopupTab, {file: 'dashboard.js'}, function(res){
-					populatePopup();
+				chrome.tabs.executeScript(lastDashboardTab, {file: 'dashboard.js'}, function(res){
+					populateDashboard();
 				});
 			});
-			popupInjectedTabs.push(tabs[0].id);
+			dashboardInjectedTabs.push(tabs[0].id);
 		} else {
-			chrome.tabs.executeScript(lastPopupTab, {file: 'dashboard.js'}, function(res){
-				populatePopup();
+			chrome.tabs.executeScript(lastDashboardTab, {file: 'dashboard.js'}, function(res){
+				populateDashboard();
 			});
 		}
 	});
@@ -174,9 +174,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 		}
 	}
 	
-	var tabIndex = popupInjectedTabs.indexOf(tabId);
+	var tabIndex = dashboardInjectedTabs.indexOf(tabId);
 	if (tabIndex != -1) {
-		popupInjectedTabs.splice(tabIndex, 1);
+		dashboardInjectedTabs.splice(tabIndex, 1);
 	}
 });
 
@@ -186,9 +186,9 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
 		updateTitle();
 	}
 	
-	var tabIndex = popupInjectedTabs.indexOf(tabId);
+	var tabIndex = dashboardInjectedTabs.indexOf(tabId);
 	if (tabIndex != -1) {
-		popupInjectedTabs.splice(tabIndex, 1);
+		dashboardInjectedTabs.splice(tabIndex, 1);
 	}
 });
 
@@ -200,7 +200,7 @@ chrome.commands.onCommand.addListener(function(command) {
 	if (command == 'toggle-play-pause') {
 		togglePlayPause(null);
 	} else if (command == 'abc') {
-		showExtendedControls();
+		showDashboard();
 	} else if (command == 'volumeUp') {
 		volumeUp();
 	} else if (command == 'volumeDown') {
