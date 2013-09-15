@@ -42,6 +42,12 @@ function addPopupItem(item){
 	}
 }
 
-function updatePopupItem(item){
+function updatePopupItem(item, action){
 	item = JSON.parse(item);
+
+	switch(action) {
+		case 'remove':
+			document.querySelector('#youtubecontrolsDashboardItemList li[data-tabid="' + item.tabId + '"]');
+			break;
+	}
 }

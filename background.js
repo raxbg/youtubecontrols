@@ -129,6 +129,10 @@ function populateDashboard() {
 	}
 }
 
+function updateDashboard(tabId, action) {
+	return;
+}
+
 function showDashboard() {
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		lastDashboardTab = tabs[0].id;
@@ -192,6 +196,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 	if (tabIndex != -1) {
 		dashboardInjectedTabs.splice(tabIndex, 1);
 	}
+
+	updateDashboard(tabId, 'remove');
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info) {
@@ -204,6 +210,8 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
 	if (tabIndex != -1) {
 		dashboardInjectedTabs.splice(tabIndex, 1);
 	}
+
+	updateDashboard(tabId, 'remove');
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {
