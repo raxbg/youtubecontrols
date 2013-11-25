@@ -27,7 +27,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 			case 'play':
 				videoObj.play();
 				break;
-			case 'pause': 
+			case 'pause':
 				videoObj.pause();
 				break;
 			case 'volumeup':

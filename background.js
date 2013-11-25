@@ -41,7 +41,7 @@ function volumeUp() {
 
 	var lastTabIndex = ytbActiveTabs.length - 1;
 	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
-	
+
 	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'volumedown'}, function(rsponse){});
 }
 
@@ -52,7 +52,7 @@ function volumeDown() {
 
 	var lastTabIndex = ytbActiveTabs.length - 1;
 	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
-	
+
 	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'volumedown'}, function(rsponse){});
 }
 
@@ -63,7 +63,7 @@ function playNext() {
 
 	var lastTabIndex = ytbActiveTabs.length - 1;
 	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
-	
+
 	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'playlistnext'}, function(rsponse){});
 }
 
@@ -74,7 +74,7 @@ function playPrevious() {
 
 	var lastTabIndex = ytbActiveTabs.length - 1;
 	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
-	
+
 	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'playlistprev'}, function(rsponse){});
 }
 
@@ -130,7 +130,21 @@ function populateDashboard() {
 }
 
 function updateDashboard(tabId, action) {
-	return;
+	if (lastDashboardTab != 0) {
+		if (action != 'remove') {
+			for (x in ytbActiveTabs) {
+				if (ytbActiveTabs[x].tabId == tabId) {
+					chrome.tabs.sendMessage(ytbActiveTabs[x].tabId, {getDashboardInfo: true, tabId: ytbActiveTabs[x].tabId, state: ytbActiveTabs[x].state}, function(response){
+						for (x in dashboardInjectedTabs) {
+							chrome.tabs.executeScript(dashboardInjectedTabs[x], {code: 'updatePopupItem("' + JSON.stringify(response) + '", "'+action+'"");'}, function(reponse){});
+						}
+					});
+				}
+			}
+		} else {
+			chrome.tabs.executeScript(lastDashboardTab, {code: 'updatePopupItem("{}", "'+action+'");'}, function(reponse){});
+		}
+	}
 }
 
 function showDashboard() {
@@ -189,29 +203,27 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 		if (discardTab(tabId)) {
 			updateIcon();
 			updateTitle();
+			//updateDashboard(tabId, 'remove');
 		}
 	}
-	
+
 	var tabIndex = dashboardInjectedTabs.indexOf(tabId);
 	if (tabIndex != -1) {
 		dashboardInjectedTabs.splice(tabIndex, 1);
 	}
-
-	updateDashboard(tabId, 'remove');
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info) {
 	if (discardTab(tabId)) {
 		updateIcon();
 		updateTitle();
+		//updateDashboard(tabId, 'remove');
 	}
-	
+
 	var tabIndex = dashboardInjectedTabs.indexOf(tabId);
 	if (tabIndex != -1) {
 		dashboardInjectedTabs.splice(tabIndex, 1);
 	}
-
-	updateDashboard(tabId, 'remove');
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {

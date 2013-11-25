@@ -17,9 +17,3 @@ window.addEventListener('message', function(e){
 			break;
 	}
 });
-
-chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
-	if (msg.updatePopupItem) {
-		updatePopupItem(JSON.stringify(msg));
-	}
-});

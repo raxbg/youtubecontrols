@@ -25,14 +25,14 @@ document.body.addEventListener('click', function(e){
 
 function addPopupItem(item){
 	item = JSON.parse(item);
-	
+
 	var ytTab = document.createElement('li');
 	ytTab.setAttribute('data-tabid', item.tabId);
 	ytTab.innerHTML = '<span class="ytcDashboardItemHeader" style="background: url(\'' + item.image + '\')"><h3 class="ytcDashboardItemTitle">' + item.title + '</h3></span>';
 	ytTab.innerHTML += '<ul class="ytcControls"><li class="ytcPlaylistPrev" ><a data-tabid="' + item.tabId + '"></a></li><li class="ytcPause"><a data-tabid="' + item.tabId + '"></a></li><li class="ytcPlay"><a data-tabid="' + item.tabId + '"></a></li><li class="ytcPlaylistNext"><a data-tabid="' + item.tabId + '"></a></li></ul>';
 	ytTab.innerHTML += '<span><a class="ytcDashboardItemFocusTabBtn" data-tabid="' + item.tabId + '"></a></span>';
 	if (item.controls) {
-		
+
 	}
 
 	document.getElementById('youtubecontrolsDashboardItemList').appendChild(ytTab);
@@ -43,11 +43,27 @@ function addPopupItem(item){
 }
 
 function updatePopupItem(item, action){
+	console.log('debugUpdate');return;
 	item = JSON.parse(item);
 
-	switch(action) {
-		case 'remove':
-			document.querySelector('#youtubecontrolsDashboardItemList li[data-tabid="' + item.tabId + '"]');
-			break;
+	try {
+		switch(action) {
+			case 'remove':
+				var card = document.querySelector('#youtubecontrolsDashboardItemList li[data-tabid="' + item.tabId + '"]');
+				if (card != null) card.remove();
+				break;
+			case 'update':
+				var card = document.querySelector('#youtubecontrolsDashboardItemList li[data-tabid="' + item.tabId + '"]');
+				if (item.state == 'playing') {
+					card.getElementsByClassName('ytcPause')[0].style.display = 'inline-block';
+					card.getElementsByClassName('ytcPlay')[0].style.display = 'none';
+				} else {
+					card.getElementsByClassName('ytcPause')[0].style.display = 'none';
+					card.getElementsByClassName('ytcPlay')[0].style.display = 'inline-block';
+				}
+				break;
+		}
+	} catch (err) {
+		alert(err.message);
 	}
 }
