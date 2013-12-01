@@ -1,3 +1,4 @@
+
 var ytbActiveTabs = [];
 var dashboardInjectedTabs = [];
 var lastDashboardTab = 0;
@@ -20,15 +21,14 @@ function togglePlayPause(tab) {
 	}
 
 	var lastTabIndex = ytbActiveTabs.length - 1;
-	var ytbActiveTabState = ytbActiveTabs[lastTabIndex].state;
-	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+	var ytbActiveTab = ytbActiveTabs[lastTabIndex];
 
-	if (ytbActiveTabState == 'paused' || ytbActiveTabState == 'ended') {
-		chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'play'}, function(rsponse){});
+	if (ytbActiveTab.getState() == 'paused' || ytbActiveTab.getState() == 'ended') {
+		chrome.tabs.sendMessage(ytbActiveTab.id, {cmd: 'play'}, function(rsponse){});
 		updateIcon();
 		chrome.browserAction.setTitle({title: 'Pause'});
 	} else {
-		chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'pause'}, function(rsponse){});
+		chrome.tabs.sendMessage(ytbActiveTab.id, {cmd: 'pause'}, function(rsponse){});
 		updateIcon();
 		chrome.browserAction.setTitle({title: 'Play'});
 	}
@@ -40,9 +40,9 @@ function volumeUp() {
 	}
 
 	var lastTabIndex = ytbActiveTabs.length - 1;
-	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+	var ytbActiveTab = ytbActiveTabs[lastTabIndex];
 
-	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'volumedown'}, function(rsponse){});
+	chrome.tabs.sendMessage(ytbActiveTab.id, {cmd: 'volumedown'}, function(rsponse){});
 }
 
 function volumeDown() {
@@ -51,9 +51,9 @@ function volumeDown() {
 	}
 
 	var lastTabIndex = ytbActiveTabs.length - 1;
-	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+	var ytbActiveTab = ytbActiveTabs[lastTabIndex];
 
-	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'volumedown'}, function(rsponse){});
+	chrome.tabs.sendMessage(ytbActiveTab.id, {cmd: 'volumedown'}, function(rsponse){});
 }
 
 function playNext() {
@@ -62,9 +62,9 @@ function playNext() {
 	}
 
 	var lastTabIndex = ytbActiveTabs.length - 1;
-	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+	var ytbActiveTab = ytbActiveTabs[lastTabIndex];
 
-	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'playlistnext'}, function(rsponse){});
+	chrome.tabs.sendMessage(ytbActiveTab.id, {cmd: 'playlistnext'}, function(rsponse){});
 }
 
 function playPrevious() {
@@ -73,9 +73,9 @@ function playPrevious() {
 	}
 
 	var lastTabIndex = ytbActiveTabs.length - 1;
-	var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+	var ytbActiveTab = ytbActiveTabs[lastTabIndex];
 
-	chrome.tabs.sendMessage(ytbActiveTab, {cmd: 'playlistprev'}, function(rsponse){});
+	chrome.tabs.sendMessage(ytbActiveTab.id, {cmd: 'playlistprev'}, function(rsponse){});
 }
 
 function updateIcon() {
@@ -83,7 +83,7 @@ function updateIcon() {
 		chrome.browserAction.setIcon({path: 'y_inactive.png'}, function(){});
 	} else {
 		var lastTabIndex = ytbActiveTabs.length - 1;
-		var ytbActiveTabState = ytbActiveTabs[lastTabIndex].state;
+		var ytbActiveTabState = ytbActiveTabs[lastTabIndex].getState();
 
 		chrome.browserAction.setIcon({path: stateIcons[ytbActiveTabState]}, function(){});
 	}
@@ -94,7 +94,7 @@ function updateTitle() {
 		chrome.browserAction.setTitle({title: 'Not active'});
 	} else {
 		var lastTabIndex = ytbActiveTabs.length - 1;
-		var ytbActiveTabState = ytbActiveTabs[lastTabIndex].state;
+		var ytbActiveTabState = ytbActiveTabs[lastTabIndex].getState();
 
 		chrome.browserAction.setTitle({title: stateTitles[ytbActiveTabState]});
 	}
@@ -102,7 +102,7 @@ function updateTitle() {
 
 function discardTab(tabId) {
 	for (x in ytbActiveTabs) {
-		if (ytbActiveTabs[x].tabId == tabId) {
+		if (ytbActiveTabs[x].id == tabId) {
 			ytbActiveTabs.splice(x,1);
 			return true;
 		}
@@ -113,36 +113,25 @@ function discardTab(tabId) {
 
 function updateYtbTabState(tabId, state) {
 	for (x in ytbActiveTabs) {
-		if (ytbActiveTabs[x].tabId == tabId) {
-			ytbActiveTabs[x].state = state;
+		if (ytbActiveTabs[x].id == tabId) {
+			ytbActiveTabs[x].setState(state);
 		}
 	}
 }
 
-function populateDashboard() {
+function updateDashboard() {
 	if (ytbActiveTabs.length > 0) {
+		var activeTabsInJson = [];
 		for (x in ytbActiveTabs) {
-			chrome.tabs.sendMessage(ytbActiveTabs[x].tabId, {getDashboardInfo: true, tabId: ytbActiveTabs[x].tabId, state: ytbActiveTabs[x].state}, function(response){
+			/*chrome.tabs.sendMessage(ytbActiveTabs[x].tabId, {getDashboardInfo: true, tabId: ytbActiveTabs[x].tabId, state: ytbActiveTabs[x].state}, function(response){
 				chrome.tabs.executeScript(lastDashboardTab, {code: 'addPopupItem(JSON.stringify(' + JSON.stringify(response) + '));'}, function(reponse){});
-			});
+			});*/
+			activeTabsInJson.push(ytbActiveTabs[x].toJson());
 		}
-	}
-}
 
-function updateDashboard(tabId, action) {
-	if (lastDashboardTab != 0) {
-		if (action != 'remove') {
-			for (x in ytbActiveTabs) {
-				if (ytbActiveTabs[x].tabId == tabId) {
-					chrome.tabs.sendMessage(ytbActiveTabs[x].tabId, {getDashboardInfo: true, tabId: ytbActiveTabs[x].tabId, state: ytbActiveTabs[x].state}, function(response){
-						for (x in dashboardInjectedTabs) {
-							chrome.tabs.executeScript(dashboardInjectedTabs[x], {code: 'updatePopupItem("' + JSON.stringify(response) + '", "'+action+'"");'}, function(reponse){});
-						}
-					});
-				}
-			}
-		} else {
-			chrome.tabs.executeScript(lastDashboardTab, {code: 'updatePopupItem("{}", "'+action+'");'}, function(reponse){});
+		for (x in dashboardInjectedTabs) {
+			//chrome.tabs.executeScript(lastDashboardTab, {code: 'populateDashboardDeck(' + JSON.stringify(activeTabsInJson) + ');'}, function(reponse){});
+			chrome.tabs.executeScript(dashboardInjectedTabs[x], {code: 'updateDashboardDeck(' + JSON.stringify(activeTabsInJson) + ');'}, function(reponse){});
 		}
 	}
 }
@@ -155,13 +144,13 @@ function showDashboard() {
 			chrome.tabs.insertCSS(tabs[0].id, {file: 'dashboard.css'}, function(res){});
 			chrome.tabs.executeScript(tabs[0].id, {file: 'dashboardEvents.js'}, function(res){
 				chrome.tabs.executeScript(lastDashboardTab, {file: 'dashboard.js'}, function(res){
-					populateDashboard();
+					updateDashboard();
 				});
 			});
 			dashboardInjectedTabs.push(tabs[0].id);
 		} else {
 			chrome.tabs.executeScript(lastDashboardTab, {file: 'dashboard.js'}, function(res){
-				populateDashboard();
+				updateDashboard();
 			});
 		}
 	});
@@ -170,19 +159,51 @@ function showDashboard() {
 chrome.browserAction.setTitle({title: 'Not active'});
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
-	if (msg.playerStateChange) {
-		if (msg.state == 'playing') {
+	if (msg.registerTab) {
+		var newTab = (function(tabId, tabState, tabIsPlaylist, tabTitle, tabImage){
+			var id = tabId,
+				state = tabState,
+				isPlaylist = tabIsPlaylist,
+				title = tabTitle,
+				image = tabImage;
+
+			return {
+				getState: function() { return state; },
+				isPlaylist: function() { return isPlaylist; },
+				getTitle: function() { return title; },
+				getImage: function() { return image; },
+				id: id,
+				setState: function(newState) { state = newState; },
+				setTitle: function(newTitle) { title = newTitle },
+				setIsPlaylist: function(tabIsPlaylist) { isPlaylist = tabIsPlaylist },
+				setImage: function(newImage) { image = newImage; },
+				toJson: function() {
+					return JSON.stringify({
+						id: id,
+						state: state,
+						isPlaylist: isPlaylist,
+						title: title,
+						image: image
+					});
+				}
+			};
+		})(sender.tab.id, msg.state, msg.isPlaylist, msg.title, msg.image);
+		ytbActiveTabs.push(newTab);
+		updateDashboard();
+	} else if (msg.playerStateChange) {
+		/*if (msg.state == 'playing') {
 			discardTab(sender.tab.id);
 			updateIcon();
 			ytbActiveTabs.push({tabId: sender.tab.id, state: 'playing'});
-		}
+		}*/
 
 		var lastTabIndex = ytbActiveTabs.length - 1;
-		var ytbActiveTab = ytbActiveTabs[lastTabIndex].tabId;
+		var ytbActiveTab = ytbActiveTabs[lastTabIndex];
 
 		updateYtbTabState(sender.tab.id, msg.state);
 		updateIcon();
 		updateTitle();
+		updateDashboard();
 	} else if (msg.focusTab) {
 		chrome.tabs.update(msg.tabId, {active: true}, function(){});
 	} else if (msg.play) {
@@ -199,7 +220,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
-	if (typeof info.url != 'undefined') {
+	if (typeof info.status != 'undefined' && info.status == 'loading') {
 		if (discardTab(tabId)) {
 			updateIcon();
 			updateTitle();
@@ -211,6 +232,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 	if (tabIndex != -1) {
 		dashboardInjectedTabs.splice(tabIndex, 1);
 	}
+	updateDashboard();
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info) {
@@ -224,6 +246,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
 	if (tabIndex != -1) {
 		dashboardInjectedTabs.splice(tabIndex, 1);
 	}
+	updateDashboard();
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {

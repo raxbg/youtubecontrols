@@ -8,18 +8,21 @@ if (document.getElementsByTagName('video').length > 0) {
 	videoObj.addEventListener('pause', function() { chrome.runtime.sendMessage({playerStateChange: true, state: 'paused'}, function(response){}); });
 	videoObj.addEventListener('play', function() { chrome.runtime.sendMessage({playerStateChange: true, state: 'playing'}, function(response){}); });
 	videoObj.addEventListener('ended', function() { chrome.runtime.sendMessage({playerStateChange: true, state: 'ended'}, function(response){}); });
-
-	chrome.runtime.sendMessage({registerTab: true, state: 'paused'}, function(response){});
-	tabRegistered = true;
 }
 
 if (document.getElementById('playlist').innerHTML.replace(/\s*/g, '').length > 0) {
 	playlist = true;
 
-	if (!tabRegistered) {
-		chrome.runtime.sendMessage({playerStateChange: true, state: 'playing'}, function(response){});
-	}
+	//if (!tabRegistered) {
+	//	chrome.runtime.sendMessage({playerStateChange: true, state: 'playing'}, function(response){});
+	//}
 }
+
+var videoState = (videoObj.paused) ? 'paused' : 'playing';
+var videoImage = 'http://img.youtube.com/vi/' + location.search.match(/v\=([^\&]*)/)[1] + '/0.jpg';
+var videoTitle = document.getElementById('watch-headline-title').innerText;
+chrome.runtime.sendMessage({registerTab: true, state: videoState, image: videoImage, title: videoTitle, isPlaylist: playlist}, function(response){});
+tabRegistered = true;
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 	if(typeof msg.cmd != 'undefined' && (videoObj != null || playlist)) {

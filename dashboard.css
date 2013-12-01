@@ -8,13 +8,13 @@
 	z-index: 10000;
 }
 
-#youtubecontrolsDashboardItemList {
+#youtubecontrolsDashboardDeck {
 	list-style-type: none;
 	width: 100%;
 	text-align: center;
 }
 
-#youtubecontrolsDashboardItemList > li {
+#youtubecontrolsDashboardDeck > li {
 	display: inline-block;
 	width: 250px;
 	height: 300px;
@@ -24,7 +24,7 @@
 	margin: 10px 20px;
 }
 
-#youtubecontrolsDashboardItemList > li span.ytcDashboardItemHeader {
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader {
 	background-size: 100% !important;
 	width: 100%;
 	height: 90px;
@@ -35,13 +35,13 @@
 	border-top-right-radius: 10px;
 }
 
-#youtubecontrolsDashboardItemList > li span.ytcDashboardItemHeader h3 {
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader h3 {
 	color: #fff !important;
 	text-shadow: 0px 0px 5px #000 !important;
 	font-weight: bold !important;
 }
 
-#youtubecontrolsDashboardItemList > li a.ytcDashboardItemFocusTabBtn {
+#youtubecontrolsDashboardDeck > li a.ytcDashboardItemFocusTabBtn {
 	background: url('chrome-extension://__MSG_@@extension_id__/images/focus_button.png');
 	display: block;
 	width: 24px;
@@ -51,12 +51,12 @@
 	margin: 20px auto;
 }
 
-#youtubecontrolsDashboardItemList > li a.ytcDashboardItemFocusTabBtn:hover {
+#youtubecontrolsDashboardDeck > li a.ytcDashboardItemFocusTabBtn:hover {
 	box-shadow: 0px 0px 5px #18C6F1;
 	background-color: #4AD4FF;
 }
 
-#youtubecontrolsDashboardItemList ul.ytcControls {
+#youtubecontrolsDashboardDeck ul.ytcControls {
 	list-style-type: none;
 	width: 100%;
 	margin: 10px 0px 0px 0px;
@@ -64,18 +64,18 @@
 	text-align: center;
 }
 
-#youtubecontrolsDashboardItemList ul.ytcControls li {
+#youtubecontrolsDashboardDeck ul.ytcControls li {
 	display: inline-block;
 	box-shadow: 0 0 10px #000;
 	margin: 0 10px;
 	cursor: pointer;
 }
 
-#youtubecontrolsDashboardItemList ul.ytcControls li:hover {
+#youtubecontrolsDashboardDeck ul.ytcControls li:hover {
 	box-shadow: 0 0 10px #18C6F1;
 }
 
-#youtubecontrolsDashboardItemList ul.ytcControls li.ytcPlaylistPrev {
+#youtubecontrolsDashboardDeck ul.ytcControls li.ytcPlaylistPrev {
 	width: 36px;
 	height: 36px;
 	margin: 6px 10px !important;
@@ -84,7 +84,7 @@
 	background: url('chrome-extension://__MSG_@@extension_id__/images/prev_button.png');
 }
 
-#youtubecontrolsDashboardItemList ul.ytcControls li.ytcPlaylistNext {
+#youtubecontrolsDashboardDeck ul.ytcControls li.ytcPlaylistNext {
 	width: 36px;
 	height: 36px;
 	margin: 6px 10px !important;
@@ -93,7 +93,7 @@
 	background: url('chrome-extension://__MSG_@@extension_id__/images/next_button.png');
 }
 
-#youtubecontrolsDashboardItemList ul.ytcControls li.ytcPause {
+#youtubecontrolsDashboardDeck ul.ytcControls li.ytcPause {
 	width: 48px;
 	height: 48px;
 	border-radius: 24px;
@@ -102,7 +102,7 @@
 	display: none;
 }
 
-#youtubecontrolsDashboardItemList ul.ytcControls li.ytcPlay {
+#youtubecontrolsDashboardDeck ul.ytcControls li.ytcPlay {
 	width: 48px;
 	height: 48px;
 	border-radius: 24px;
@@ -110,7 +110,7 @@
 	background: url('chrome-extension://__MSG_@@extension_id__/images/play_button.png');
 }
 
-#youtubecontrolsDashboardItemList ul.ytcControls li a {
+#youtubecontrolsDashboardDeck ul.ytcControls li a {
 	display: block;
 	width: 100%;
 	height: 100%;

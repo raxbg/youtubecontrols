@@ -1,12 +1,12 @@
 document.addEventListener('keyup', function(e){
-	if (e.keyCode == 27) {
-		document.getElementById('youtubecontrolsOverlay').remove();
+	if (e.keyCode == 27 && typeof ytcDashboard != 'undefined') {
+		ytcDashboard.close();
 	}
 });
 
 document.body.addEventListener('click', function(e){
-	if (e.target.id == 'youtubecontrolsOverlay' || e.target.id == 'youtubecontrolsDashboardItemList') {
-		document.getElementById('youtubecontrolsOverlay').remove();
+	if (e.target == ytcDashboard.getOverlay() || e.target == ytcDashboard.getCardDeck()) {
+		ytcDashboard.close();
 	} else if (e.target.className.search('ytcDashboardItemFocusTabBtn') > -1) {
 		window.postMessage({action:'focus', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
 	} else if (e.target.className == '') {
@@ -23,47 +23,65 @@ document.body.addEventListener('click', function(e){
 	}
 });
 
-function addPopupItem(item){
-	item = JSON.parse(item);
+function placeTabCard(tab){
+	var ytTab = ytcDashboard.getCardDeck().querySelector('li[data-tabid="'+tab.id+'"]');
+	if (ytTab) {
+		updateTabCard(tab, ytTab);
+	} else {
+		ytTab = document.createElement('li');
+		ytTab.setAttribute('data-tabid', tab.id);
+		ytTab.innerHTML = '<span class="ytcDashboardItemHeader" style="background: url(\'' + tab.image + '\')"><h3 class="ytcDashboardItemTitle">' + tab.title + '</h3></span>';
+		ytTab.innerHTML += '<ul class="ytcControls"><li class="ytcPlaylistPrev" ><a data-tabid="' + tab.id + '"></a></li><li class="ytcPause"><a data-tabid="' + tab.id+ '"></a></li><li class="ytcPlay"><a data-tabid="' + tab.id + '"></a></li><li class="ytcPlaylistNext"><a data-tabid="' + tab.id + '"></a></li></ul>';
+		ytTab.innerHTML += '<span><a class="ytcDashboardItemFocusTabBtn" data-tabid="' + tab.id + '"></a></span>';
+		if (tab.controls) {
 
-	var ytTab = document.createElement('li');
-	ytTab.setAttribute('data-tabid', item.tabId);
-	ytTab.innerHTML = '<span class="ytcDashboardItemHeader" style="background: url(\'' + item.image + '\')"><h3 class="ytcDashboardItemTitle">' + item.title + '</h3></span>';
-	ytTab.innerHTML += '<ul class="ytcControls"><li class="ytcPlaylistPrev" ><a data-tabid="' + item.tabId + '"></a></li><li class="ytcPause"><a data-tabid="' + item.tabId + '"></a></li><li class="ytcPlay"><a data-tabid="' + item.tabId + '"></a></li><li class="ytcPlaylistNext"><a data-tabid="' + item.tabId + '"></a></li></ul>';
-	ytTab.innerHTML += '<span><a class="ytcDashboardItemFocusTabBtn" data-tabid="' + item.tabId + '"></a></span>';
-	if (item.controls) {
+		}
 
-	}
-
-	document.getElementById('youtubecontrolsDashboardItemList').appendChild(ytTab);
-	if (item.state == 'playing') {
-		ytTab.getElementsByClassName('ytcPause')[0].style.display = 'inline-block';
-		ytTab.getElementsByClassName('ytcPlay')[0].style.display = 'none';
+		ytcDashboard.getCardDeck().appendChild(ytTab);
+		ytcDashboard.addTabId(tab.id);
+		if (tab.state == 'playing') {
+			ytTab.getElementsByClassName('ytcPause')[0].style.display = 'inline-block';
+			ytTab.getElementsByClassName('ytcPlay')[0].style.display = 'none';
+		}
 	}
 }
 
-function updatePopupItem(item, action){
-	console.log('debugUpdate');return;
-	item = JSON.parse(item);
+function populateDashboardDeck(tabs) {
+}
 
-	try {
-		switch(action) {
-			case 'remove':
-				var card = document.querySelector('#youtubecontrolsDashboardItemList li[data-tabid="' + item.tabId + '"]');
-				if (card != null) card.remove();
-				break;
-			case 'update':
-				var card = document.querySelector('#youtubecontrolsDashboardItemList li[data-tabid="' + item.tabId + '"]');
-				if (item.state == 'playing') {
-					card.getElementsByClassName('ytcPause')[0].style.display = 'inline-block';
-					card.getElementsByClassName('ytcPlay')[0].style.display = 'none';
-				} else {
-					card.getElementsByClassName('ytcPause')[0].style.display = 'none';
-					card.getElementsByClassName('ytcPlay')[0].style.display = 'inline-block';
-				}
-				break;
+function updateDashboardDeck(tabs) {
+	var currentTabList = ytcDashboard.getTabIds();
+	var tabIndex = -1;
+	var tab = null;
+debugger;
+	for (x in tabs) {
+		tab = JSON.parse(tabs[x]);
+		placeTabCard(tab);
+		tabIndex = currentTabList.indexOf(tab.id);
+		if (tabIndex != -1) {
+			currentTabList.splice(tabIndex, 1);
 		}
-	} catch (err) {
-		alert(err.message);
+	}
+
+	var tabCard = null;
+	for (x in currentTabList) { //walk over the closed tabs
+		tabCard = ytcDashboard.getCardDeck().querySelector('li[data-tabid="'+currentTabList[x]+'"]');
+		if (tabCard) {
+			tabCard.remove();
+		}
+		ytcDashboard.removeTabId(currentTabList[x]);
+	}
+}
+
+function updateTabCard(tab){
+	var card = (typeof arguments[1] != 'undefined') ? arguments[1] : ytcDashboard.getCardDeck().querySelector('li[data-tabid="'+tab.id+'"]');
+	card.querySelector('span.ytcDashboardItemHeader').style.background = 'url(\''+tab.image+'\')';
+	card.querySelector('h3.ytcDashboardItemTitle').innerHTML = tab.title;
+	if (tab.state == 'playing') {
+		card.getElementsByClassName('ytcPause')[0].style.display = 'inline-block';
+		card.getElementsByClassName('ytcPlay')[0].style.display = 'none';
+	} else {
+		card.getElementsByClassName('ytcPause')[0].style.display = 'none';
+		card.getElementsByClassName('ytcPlay')[0].style.display = 'inline-block';
 	}
 }
