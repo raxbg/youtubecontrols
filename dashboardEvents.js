@@ -50,26 +50,28 @@ function populateDashboardDeck(tabs) {
 }
 
 function updateDashboardDeck(tabs) {
-	var currentTabList = ytcDashboard.getTabIds();
+	var currentTabList = [];
 	var tabIndex = -1;
 	var tab = null;
-debugger;
+
 	for (x in tabs) {
 		tab = JSON.parse(tabs[x]);
 		placeTabCard(tab);
-		tabIndex = currentTabList.indexOf(tab.id);
-		if (tabIndex != -1) {
-			currentTabList.splice(tabIndex, 1);
-		}
+		currentTabList.push(tab.id);
 	}
 
+	var allTabIds = ytcDashboard.getTabIds();
+	var closedTabs = allTabIds.filter(function(a){
+		return (currentTabList.indexOf(a) == -1);
+	});
+
 	var tabCard = null;
-	for (x in currentTabList) { //walk over the closed tabs
-		tabCard = ytcDashboard.getCardDeck().querySelector('li[data-tabid="'+currentTabList[x]+'"]');
+	for (x in closedTabs) {
+		tabCard = ytcDashboard.getCardDeck().querySelector('li[data-tabid="'+closedTabs[x]+'"]');
 		if (tabCard) {
 			tabCard.remove();
 		}
-		ytcDashboard.removeTabId(currentTabList[x]);
+		ytcDashboard.removeTabId(closedTabs[x]);
 	}
 }
 

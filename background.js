@@ -120,19 +120,13 @@ function updateYtbTabState(tabId, state) {
 }
 
 function updateDashboard() {
-	if (ytbActiveTabs.length > 0) {
-		var activeTabsInJson = [];
-		for (x in ytbActiveTabs) {
-			/*chrome.tabs.sendMessage(ytbActiveTabs[x].tabId, {getDashboardInfo: true, tabId: ytbActiveTabs[x].tabId, state: ytbActiveTabs[x].state}, function(response){
-				chrome.tabs.executeScript(lastDashboardTab, {code: 'addPopupItem(JSON.stringify(' + JSON.stringify(response) + '));'}, function(reponse){});
-			});*/
-			activeTabsInJson.push(ytbActiveTabs[x].toJson());
-		}
+	var activeTabsInJson = [];
+	for (x in ytbActiveTabs) {
+		activeTabsInJson.push(ytbActiveTabs[x].toJson());
+	}
 
-		for (x in dashboardInjectedTabs) {
-			//chrome.tabs.executeScript(lastDashboardTab, {code: 'populateDashboardDeck(' + JSON.stringify(activeTabsInJson) + ');'}, function(reponse){});
-			chrome.tabs.executeScript(dashboardInjectedTabs[x], {code: 'updateDashboardDeck(' + JSON.stringify(activeTabsInJson) + ');'}, function(reponse){});
-		}
+	for (x in dashboardInjectedTabs) {
+		chrome.tabs.executeScript(dashboardInjectedTabs[x], {code: 'updateDashboardDeck(' + JSON.stringify(activeTabsInJson) + ');'}, function(reponse){});
 	}
 }
 
