@@ -7,18 +7,26 @@ document.addEventListener('keyup', function(e){
 document.body.addEventListener('click', function(e){
 	if (e.target == ytcDashboard.getOverlay() || e.target == ytcDashboard.getCardDeck()) {
 		ytcDashboard.close();
-	} else if (e.target.className.search('ytcDashboardItemFocusTabBtn') > -1) {
-		window.postMessage({action:'focus', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
-	} else if (e.target.className == '') {
-		var parent = e.target.parentNode;
-		if (parent.className.search('ytcPlaylistPrev') > -1) {
-			window.postMessage({action:'prev', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
-		} else if (parent.className.search('ytcPause') > -1) {
-			window.postMessage({action:'pause', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
-		} else if (parent.className.search('ytcPlay') > -1) {
-			window.postMessage({action:'play', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
-		} else if (parent.className.search('ytcPlaylistNext') > -1) {
-			window.postMessage({action:'next', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+	} else {
+		var action = e.target.getAttribute('data-action');
+		if (action) {
+			switch (action) {
+				case 'playlistPrev':
+					window.postMessage({action:'prev', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+				   	break;
+				case 'pause':
+					window.postMessage({action:'pause', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					break;
+				case 'play':
+					window.postMessage({action:'play', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					break;
+				case 'playlistNext':
+					window.postMessage({action:'next', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					break;
+				case 'focusTab':
+					window.postMessage({action:'focus', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					break;
+			}
 		}
 	}
 });
@@ -30,9 +38,11 @@ function placeTabCard(tab){
 	} else {
 		ytTab = document.createElement('li');
 		ytTab.setAttribute('data-tabid', tab.id);
-		ytTab.innerHTML = '<span class="ytcDashboardItemHeader" style="background: url(\'' + tab.image + '\')"><h3 class="ytcDashboardItemTitle">' + tab.title + '</h3></span>';
-		ytTab.innerHTML += '<ul class="ytcControls"><li class="ytcPlaylistPrev" ><a data-tabid="' + tab.id + '"></a></li><li class="ytcPause"><a data-tabid="' + tab.id+ '"></a></li><li class="ytcPlay"><a data-tabid="' + tab.id + '"></a></li><li class="ytcPlaylistNext"><a data-tabid="' + tab.id + '"></a></li></ul>';
-		ytTab.innerHTML += '<span><a class="ytcDashboardItemFocusTabBtn" data-tabid="' + tab.id + '"></a></span>';
+		ytTab.classList.add('shrinked');
+		ytTab.innerHTML = '<span class="row ytcDashboardItemHeader" style="background: url(\'' + tab.image + '\')"><h3 class="ytcDashboardItemTitle">' + tab.title + '</h3></span>';
+		ytTab.innerHTML += '<span class="row"><ul class="ytcControls"><li class="ytcPlaylistPrev" ><a data-tabid="' + tab.id + '" data-action="playlistPrev"></a></li><li class="ytcPause"><a data-tabid="' + tab.id+ '" data-action="pause"></a></li><li class="ytcPlay"><a data-tabid="' + tab.id + '" data-action="play"></a></li><li class="ytcPlaylistNext"><a data-tabid="' + tab.id + '" data-action="playlistNext"></a></li></ul></span>';
+		ytTab.innerHTML += '<span class="row rowShareUrl">'+tab.share_url+'</span>';
+		ytTab.innerHTML += '<span class="row"><a class="ytcDashboardItemFocusTabBtn" data-tabid="' + tab.id + '" data-action="focusTab"></a></span>';
 		if (tab.controls) {
 
 		}
@@ -43,6 +53,9 @@ function placeTabCard(tab){
 			ytTab.getElementsByClassName('ytcPause')[0].style.display = 'inline-block';
 			ytTab.getElementsByClassName('ytcPlay')[0].style.display = 'none';
 		}
+		setTimeout(function(){
+			ytTab.classList.remove('shrinked');
+		}, 300);
 	}
 }
 
@@ -69,7 +82,12 @@ function updateDashboardDeck(tabs) {
 	for (x in closedTabs) {
 		tabCard = ytcDashboard.getCardDeck().querySelector('li[data-tabid="'+closedTabs[x]+'"]');
 		if (tabCard) {
-			tabCard.remove();
+			(function(){
+				tabCard.classList.add('shrinked');
+				setTimeout(function(){
+					tabCard.remove();
+				}, 300);
+			})();
 		}
 		ytcDashboard.removeTabId(closedTabs[x]);
 	}
@@ -79,6 +97,7 @@ function updateTabCard(tab){
 	var card = (typeof arguments[1] != 'undefined') ? arguments[1] : ytcDashboard.getCardDeck().querySelector('li[data-tabid="'+tab.id+'"]');
 	card.querySelector('span.ytcDashboardItemHeader').style.background = 'url(\''+tab.image+'\')';
 	card.querySelector('h3.ytcDashboardItemTitle').innerHTML = tab.title;
+	card.querySelector('span.rowShareUrl').innerHTML = tab.share_url;
 	if (tab.state == 'playing') {
 		card.getElementsByClassName('ytcPause')[0].style.display = 'inline-block';
 		card.getElementsByClassName('ytcPlay')[0].style.display = 'none';

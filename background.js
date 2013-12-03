@@ -119,6 +119,19 @@ function updateYtbTabState(tabId, state) {
 	}
 }
 
+function updateYtbTabInfo(tabId, info) {
+	for (x in ytbActiveTabs) {
+		if (ytbActiveTabs[x].id == tabId) {
+			ytbActiveTabs[x].setState(info.state);
+			ytbActiveTabs[x].setTitle(info.title);
+			ytbActiveTabs[x].setIsPlaylist(info.isPlaylist);
+			ytbActiveTabs[x].setImage(info.image);
+			ytbActiveTabs[x].setShareUrl(info.share_url);
+		}
+	}
+	updateDashboard();
+}
+
 function updateDashboard() {
 	var activeTabsInJson = [];
 	for (x in ytbActiveTabs) {
@@ -154,43 +167,41 @@ chrome.browserAction.setTitle({title: 'Not active'});
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 	if (msg.registerTab) {
-		var newTab = (function(tabId, tabState, tabIsPlaylist, tabTitle, tabImage){
+		var newTab = (function(tabId, tabState, tabIsPlaylist, tabTitle, tabImage, tabShareUrl){
 			var id = tabId,
 				state = tabState,
 				isPlaylist = tabIsPlaylist,
 				title = tabTitle,
-				image = tabImage;
+				image = tabImage,
+				share_url = tabShareUrl;
 
 			return {
 				getState: function() { return state; },
 				isPlaylist: function() { return isPlaylist; },
 				getTitle: function() { return title; },
 				getImage: function() { return image; },
+				getShareUrl: function() { return share_url; },
 				id: id,
 				setState: function(newState) { state = newState; },
 				setTitle: function(newTitle) { title = newTitle },
 				setIsPlaylist: function(tabIsPlaylist) { isPlaylist = tabIsPlaylist },
 				setImage: function(newImage) { image = newImage; },
+				setShareUrl: function(newShareUrl) { share_url = newShareUrl; },
 				toJson: function() {
 					return JSON.stringify({
 						id: id,
 						state: state,
 						isPlaylist: isPlaylist,
 						title: title,
-						image: image
+						image: image,
+						share_url: share_url
 					});
 				}
 			};
-		})(sender.tab.id, msg.state, msg.isPlaylist, msg.title, msg.image);
+		})(sender.tab.id, msg.state, msg.isPlaylist, msg.title, msg.image, msg.share_url);
 		ytbActiveTabs.push(newTab);
 		updateDashboard();
 	} else if (msg.playerStateChange) {
-		/*if (msg.state == 'playing') {
-			discardTab(sender.tab.id);
-			updateIcon();
-			ytbActiveTabs.push({tabId: sender.tab.id, state: 'playing'});
-		}*/
-
 		var lastTabIndex = ytbActiveTabs.length - 1;
 		var ytbActiveTab = ytbActiveTabs[lastTabIndex];
 
@@ -198,6 +209,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 		updateIcon();
 		updateTitle();
 		updateDashboard();
+	} else if (msg.updateTabInfo) {
+		updateYtbTabInfo(sender.tab.id, msg);
 	} else if (msg.focusTab) {
 		chrome.tabs.update(msg.tabId, {active: true}, function(){});
 	} else if (msg.play) {
@@ -214,26 +227,25 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+	console.log(info);
 	if (typeof info.status != 'undefined' && info.status == 'loading') {
-		if (discardTab(tabId)) {
-			updateIcon();
-			updateTitle();
-			//updateDashboard(tabId, 'remove');
+		if (typeof info.url == 'undefined') {
+			discardTab(tabId);
+			var tabIndex = dashboardInjectedTabs.indexOf(tabId);
+			if (tabIndex != -1) {
+				dashboardInjectedTabs.splice(tabIndex, 1);
+			}
+			updateDashboard();
+		} else {
+			chrome.tabs.sendMessage(tabId, {updateTabInfo: true}, function(response){});
 		}
 	}
-
-	var tabIndex = dashboardInjectedTabs.indexOf(tabId);
-	if (tabIndex != -1) {
-		dashboardInjectedTabs.splice(tabIndex, 1);
-	}
-	updateDashboard();
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info) {
 	if (discardTab(tabId)) {
 		updateIcon();
 		updateTitle();
-		//updateDashboard(tabId, 'remove');
 	}
 
 	var tabIndex = dashboardInjectedTabs.indexOf(tabId);
