@@ -227,7 +227,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
-	console.log(info);
 	if (typeof info.status != 'undefined' && info.status == 'loading') {
 		if (typeof info.url == 'undefined') {
 			discardTab(tabId);
