@@ -27,7 +27,7 @@ function loadTabInfo(){
 		isTabInfoUpdated = false;
 		videoState = 'paused';
 	}
-	videoImage = 'http://img.youtube.com/vi/' + location.search.match(/v\=([^\&]*)/)[1] + '/0.jpg';
+	videoImage = '//img.youtube.com/vi/' + location.search.match(/v\=([^\&]*)/)[1] + '/0.jpg';
 	try {
 		videoTitle = document.getElementById('watch-headline-title').innerText;
 	} catch (err) {

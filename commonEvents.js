@@ -15,5 +15,8 @@ window.addEventListener('message', function(e){
 		case 'next':
 			chrome.runtime.sendMessage({next: true, tabId: e.data.tabId}, function(response){});
 			break;
+		case 'close':
+			chrome.runtime.sendMessage({closeTab: true, tabId: e.data.tabId}, function(response){});
+			break;
 	}
 });

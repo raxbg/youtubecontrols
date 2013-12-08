@@ -1,3 +1,34 @@
+/* Styles Reset */
+#youtubecontrolsDashboardDeck div, #youtubecontrolsDashboardDeck span, #youtubecontrolsDashboardDeck h1, 
+#youtubecontrolsDashboardDeck h2, #youtubecontrolsDashboardDeck h3, #youtubecontrolsDashboardDeck h4, 
+#youtubecontrolsDashboardDeck h5, #youtubecontrolsDashboardDeck h6, #youtubecontrolsDashboardDeck p, 
+#youtubecontrolsDashboardDeck a, #youtubecontrolsDashboardDeck img, #youtubecontrolsDashboardDeck b, 
+#youtubecontrolsDashboardDeck u, #youtubecontrolsDashboardDeck i, #youtubecontrolsDashboardDeck ol, 
+#youtubecontrolsDashboardDeck ul, #youtubecontrolsDashboardDeck li
+{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+#youtubecontrolsDashboardDeck {
+	line-height: 1;
+}
+#youtubecontrolsDashboardDeck ol, #youtubecontrolsDashboardDeck ul {
+	list-style: none;
+}
+#youtubecontrolsDashboardDeck blockquote, #youtubecontrolsDashboardDeck q {
+	quotes: none;
+}
+#youtubecontrolsDashboardDeck blockquote:before, #youtubecontrolsDashboardDeck blockquote:after,
+#youtubecontrolsDashboardDeck q:before, #youtubecontrolsDashboardDeck q:after {
+	content: '';
+	content: none;
+}
+/* End Styles Reset */
+
 #youtubecontrolsOverlay {
 	position: fixed;
 	width: 100%;
@@ -15,21 +46,34 @@
 }
 
 #youtubecontrolsDashboardDeck > li {
-	transition: 300ms;
+	position: relative;
+	-webkit-transition: 300ms;
 	display: inline-block;
 	width: 250px;
 	height: 300px;
 	background: rgba(226, 226, 226, 0.9);
 	box-shadow: 0 0 10px #C0C0C0;
 	border-radius: 10px;
-	margin: 10px 20px;
+	margin: 20px;
+}
+
+#youtubecontrolsDashboardDeck > li > div.selectedOverlay {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	background: rgba(69, 210, 255, 0.4);
+	z-index: 1000000;
+	border-radius: 10px;
 }
 
 #youtubecontrolsDashboardDeck > li.shrinked {
 	-webkit-transform: scale(0, 0);
 }
 
-#youtubecontrolsDashboardDeck > li > span.row {
+#youtubecontrolsDashboardDeck > li > span.cardItemsRow {
 	width: 100%;
 	display: inline-block;
 	padding-top: 10px;
@@ -52,6 +96,30 @@
 	font-weight: bold !important;
 }
 
+/* Buttons */
+
+#youtubecontrolsCloseSelectedTabsBtn {
+	color: #DADADA;
+	padding: 5px;
+	text-decoration: none;
+	box-shadow: #18C6F1 0px 0px 5px;
+	border-radius: 5px;
+	background: #000;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	cursor: pointer;
+	display:none;
+}
+
+#youtubecontrolsCloseSelectedTabsBtn:hover {
+	box-shadow: #18C6F1 0px 0px 10px;
+}
+
+#youtubecontrolsCloseSelectedTabsBtn:active {
+	background: #252525;
+}
+
 #youtubecontrolsDashboardDeck > li a.ytcDashboardItemFocusTabBtn {
 	background: url('chrome-extension://__MSG_@@extension_id__/images/focus_button.png');
 	display: block;
@@ -65,6 +133,23 @@
 #youtubecontrolsDashboardDeck > li a.ytcDashboardItemFocusTabBtn:hover {
 	box-shadow: 0px 0px 5px #18C6F1;
 	background-color: #4AD4FF;
+}
+
+#youtubecontrolsDashboardDeck > li a.ytcDashboardItemCloseTabBtn {
+	position: absolute;
+	background: url('chrome-extension://__MSG_@@extension_id__/images/close_button.png');
+	display: block;
+	border-radius: 10px;
+	box-shadow: #8D8D8D 0px 0px 5px;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	top: -10px;
+	left: 240px;
+}
+
+#youtubecontrolsDashboardDeck > li a.ytcDashboardItemCloseTabBtn:hover {
+	box-shadow: #FFF 0px 0px 10px;
 }
 
 #youtubecontrolsDashboardDeck ul.ytcControls {
@@ -126,3 +211,4 @@
 	width: 100%;
 	height: 100%;
 }
+/* End Buttons */

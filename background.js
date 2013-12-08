@@ -221,6 +221,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 		chrome.tabs.sendMessage(msg.tabId, {cmd: 'playlistprev'}, function(rsponse){});
 	} else if (msg.next) {
 		chrome.tabs.sendMessage(msg.tabId, {cmd: 'playlistnext'}, function(rsponse){});
+	} else if (msg.closeTab) {
+		chrome.tabs.remove(msg.tabId, function(){});
 	}
 
 	sendResponse();
