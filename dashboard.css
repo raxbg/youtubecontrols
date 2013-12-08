@@ -96,6 +96,93 @@
 	font-weight: bold !important;
 }
 
+/* Progress bar */
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemProgressBar {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 98px;
+	-webkit-appearance: none;
+	background-color: #F00;
+	height: 2px;
+	transition: 200ms;
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemProgressBar:focus {
+	outline: 0;
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemProgressBar::-webkit-slider-thumb {
+	-webkit-appearance: none;
+    position: relative;
+    top: 0;
+    z-index: 1;
+	width: 8px;
+	height: 2px;
+	background: #FFF;
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemProgressBar:hover {
+	height: 10px;
+	top: 90px;
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemProgressBar:hover::-webkit-slider-thumb {
+	height: 14px;
+	width: 14px;
+	border-radius: 7px;
+	background: -webkit-radial-gradient(circle, #666, #fff, #fff, #fff);
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemProgressBar:hover::-webkit-slider-thumb:hover {
+	background: -webkit-radial-gradient(circle, #F00, #fff, #fff, #fff);
+}
+/* End Progress Bar */
+
+/* Volume bar */
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemVolumeBar {
+	position: absolute;
+	width: 80px;
+	left: -40px;
+	top: 50px;
+	-webkit-appearance: none;
+	background-color: #F00;
+	height: 2px;
+	transition: 200ms;
+	-webkit-transform: rotate(-90deg);
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemVolumeBar:focus {
+	outline: 0;
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemVolumeBar::-webkit-slider-thumb {
+	-webkit-appearance: none;
+    position: relative;
+    top: 0;
+    z-index: 1;
+	width: 8px;
+	height: 2px;
+	background: #FFF;
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemVolumeBar:hover {
+	height: 10px;
+	left: -35px;
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemVolumeBar:hover::-webkit-slider-thumb {
+	height: 14px;
+	width: 14px;
+	border-radius: 7px;
+	background: -webkit-radial-gradient(circle, #666, #fff, #fff, #fff);
+}
+
+#youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemVolumeBar:hover::-webkit-slider-thumb:hover {
+	background: -webkit-radial-gradient(circle, #F00, #fff, #fff, #fff);
+}
+/* End Volume Bar */
+
 /* Buttons */
 
 #youtubecontrolsCloseSelectedTabsBtn {

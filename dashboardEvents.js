@@ -9,7 +9,7 @@ document.addEventListener('keyup', function(e){
 });
 
 document.addEventListener('mousedown', function(e){
-	if (!e.target.classList.contains('rowShareUrl')) {
+	if (!e.target.classList.contains('rowShareUrl') && !e.target.classList.contains('ytcDashboardItemProgressBar') && !e.target.classList.contains('ytcDashboardItemVolumeBar')) {
 		e.preventDefault();
 		selectStartTime = e.timeStamp;
 		inSelectMode = true;
@@ -59,25 +59,35 @@ document.body.addEventListener('click', function(e){
 		} else if (action) {
 			switch (action) {
 				case 'playlistPrev':
-					window.postMessage({action:'prev', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					window.postMessage({action:'prev', tabId: parseInt(tabId)}, "*");
 				   	break;
 				case 'pause':
-					window.postMessage({action:'pause', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					window.postMessage({action:'pause', tabId: parseInt(tabId)}, "*");
 					break;
 				case 'play':
-					window.postMessage({action:'play', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					window.postMessage({action:'play', tabId: parseInt(tabId)}, "*");
 					break;
 				case 'playlistNext':
-					window.postMessage({action:'next', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					window.postMessage({action:'next', tabId: parseInt(tabId)}, "*");
 					break;
 				case 'focusTab':
-					window.postMessage({action:'focus', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					window.postMessage({action:'focus', tabId: parseInt(tabId)}, "*");
 					break;
 				case 'closeTab':
-					window.postMessage({action:'close', tabId: parseInt(e.target.getAttribute('data-tabId'))}, "*");
+					window.postMessage({action:'close', tabId: parseInt(tabId)}, "*");
 					break;
 			}
 		}
+	}
+});
+
+document.body.addEventListener('change', function(e){
+	if (e.target.classList.contains('ytcDashboardItemProgressBar')) {
+		var tabId = parseInt(e.target.getAttribute('data-tabId'));
+		window.postMessage({action:'rewind', tabId: parseInt(tabId), toTime: e.target.value}, "*");
+	} else if (e.target.classList.contains('ytcDashboardItemVolumeBar')) {
+		var tabId = parseInt(e.target.getAttribute('data-tabId'));
+		window.postMessage({action:'changeVolume', tabId: parseInt(tabId), toVolume: e.target.value}, "*");
 	}
 });
 
@@ -90,16 +100,39 @@ function placeTabCard(tab){
 		ytTab.setAttribute('data-tabid', tab.id);
 		ytTab.classList.add('shrinked');
 		ytTab.classList.add('partOfTabCard');
+		
+		//Convert progress and duration to human readable strings
+		var duration = parseInt(tab.duration);
+		var durationHours = parseInt(duration/3600);
+		duration -= durationHours*3600;
+		var durationMinutes = parseInt(duration/60);
+		duration -= durationMinutes*60;
+		var durationSeconds = duration;
+		var durationString = (durationHours) ? (durationHours + ':' + durationMinutes + ':' + durationSeconds) : (durationMinutes + ':' + durationSeconds);
+		
+		var currentTime = parseInt(tab.currentTime);
+		var currentTimeHours = parseInt(currentTime/3600);
+		currentTime -= currentTimeHours*3600;
+		var currentTimeMinutes = parseInt(currentTime/60);
+		currentTime -= currentTimeMinutes*60;
+		var currentTimeSeconds = currentTime;
+		var currentTimeString = (currentTimeHours) ? (currentTimeHours + ':' + currentTimeMinutes + ':' + currentTimeSeconds) : (currentTimeMinutes + ':' + currentTimeSeconds);
+		//End of progress and duration conversion
+		
 		var contentHtml = '';
-		contentHtml += '<a class="ytcDashboardItemCloseTabBtn" data-tabid="' + tab.id+ '" data-action="closeTab"></a>';
-		contentHtml += '<span class="cardItemsRow ytcDashboardItemHeader partOfTabCard" data-tabid="' + tab.id+ '" style="background: url(\'' + tab.image + '\')"><h3 class="ytcDashboardItemTitle">' + tab.title + '</h3></span>';
+		contentHtml += '<a class="ytcDashboardItemCloseTabBtn" data-tabid="' + tab.id+ '" data-action="closeTab" title="Close tab"></a>';
+		contentHtml += '<span class="cardItemsRow ytcDashboardItemHeader partOfTabCard" data-tabid="' + tab.id+ '" style="background: url(\'' + tab.image + '\')">';
+		contentHtml += '<h3 class="ytcDashboardItemTitle">' + tab.title + '</h3>';
+		contentHtml += '<input class="ytcDashboardItemVolumeBar" type="range" min="0" max="1" value="'+tab.volume+'" step="0.1" data-tabid="' + tab.id+ '" />';
+		contentHtml += '<input class="ytcDashboardItemProgressBar" type="range" min="1" max="'+tab.duration+'" value="'+tab.currentTime+'" step="1" data-tabid="' + tab.id+ '" /></span>';
+		contentHtml += '<span class="cardItemsRow partOfTabCard numericProgressInfo" data-tabid="' + tab.id+ '">'+currentTimeString+' / '+durationString+'</span>';
 		contentHtml += '<span class="cardItemsRow partOfTabCard" data-tabid="' + tab.id+ '"><ul class="ytcControls">';
 		contentHtml += '<li class="ytcPlaylistPrev"><a class="partOfTabCard" data-tabid="' + tab.id + '" data-action="playlistPrev"></a></li>';
 		contentHtml += '<li class="ytcPause"><a class="partOfTabCard" data-tabid="' + tab.id+ '" data-action="pause"></a></li>';
 		contentHtml += '<li class="ytcPlay"><a class="partOfTabCard" data-tabid="' + tab.id + '" data-action="play"></a></li>';
 		contentHtml += '<li class="ytcPlaylistNext"><a class="partOfTabCard" data-tabid="' + tab.id + '" data-action="playlistNext"></a></li></ul></span>';
 		contentHtml += '<span class="cardItemsRow rowShareUrl partOfTabCard" data-tabid="' + tab.id+ '">'+tab.share_url+'</span>';
-		contentHtml += '<span class="cardItemsRow"><a class="ytcDashboardItemFocusTabBtn" data-tabid="' + tab.id + '" data-action="focusTab"></a></span>';
+		contentHtml += '<span class="cardItemsRow"><a class="ytcDashboardItemFocusTabBtn" data-tabid="' + tab.id + '" data-action="focusTab" title="Focus tab"></a></span>';
 		ytTab.innerHTML = contentHtml;
 		if (tab.controls) {
 
@@ -160,6 +193,28 @@ function updateTabCard(tab){
 	card.querySelector('span.ytcDashboardItemHeader').style.background = 'url(\''+tab.image+'\')';
 	card.querySelector('h3.ytcDashboardItemTitle').innerHTML = tab.title;
 	card.querySelector('span.rowShareUrl').innerHTML = tab.share_url;
+	card.querySelector('input.ytcDashboardItemProgressBar').value = parseInt(tab.currentTime);
+	card.querySelector('input.ytcDashboardItemVolumeBar').value = parseInt(tab.volume);
+	
+	//Convert progress and duration to human readable strings
+	var duration = parseInt(tab.duration);
+	var durationHours = parseInt(duration/3600);
+	duration -= durationHours*3600;
+	var durationMinutes = parseInt(duration/60);
+	duration -= durationMinutes*60;
+	var durationSeconds = duration;
+	var durationString = (durationHours) ? (durationHours + ':' + durationMinutes + ':' + durationSeconds) : (durationMinutes + ':' + durationSeconds);
+	
+	var currentTime = parseInt(tab.currentTime);
+	var currentTimeHours = parseInt(currentTime/3600);
+	currentTime -= currentTimeHours*3600;
+	var currentTimeMinutes = parseInt(currentTime/60);
+	currentTime -= currentTimeMinutes*60;
+	var currentTimeSeconds = currentTime;
+	var currentTimeString = (currentTimeHours) ? (currentTimeHours + ':' + currentTimeMinutes + ':' + currentTimeSeconds) : (currentTimeMinutes + ':' + currentTimeSeconds);
+	//End of progress and duration conversion
+	card.querySelector('span.numericProgressInfo').innerHTML = currentTimeString +' / '+ durationString;
+	
 	if (tab.state == 'playing') {
 		card.getElementsByClassName('ytcPause')[0].style.display = 'inline-block';
 		card.getElementsByClassName('ytcPlay')[0].style.display = 'none';

@@ -18,5 +18,11 @@ window.addEventListener('message', function(e){
 		case 'close':
 			chrome.runtime.sendMessage({closeTab: true, tabId: e.data.tabId}, function(response){});
 			break;
+		case 'rewind':
+			chrome.runtime.sendMessage({rewind: true, tabId: e.data.tabId, toTime: e.data.toTime}, function(response){});
+			break;
+		case 'changeVolume':
+			chrome.runtime.sendMessage({changeVolume: true, tabId: e.data.tabId, toVolume: e.data.toVolume}, function(response){});
+			break;
 	}
 });
