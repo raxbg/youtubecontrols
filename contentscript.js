@@ -22,6 +22,7 @@ function loadTabInfo(){
 			if ((e.timeStamp - lastTimeupdate) >= 100) {
 				videoDuration = parseInt(videoObj.duration);
 				videoCurrentTime = parseInt(videoObj.currentTime);
+				videoVolume = videoObj.volume;
 				updateTabInfo();
 				lastTimeupdate = e.timeStamp;
 			}

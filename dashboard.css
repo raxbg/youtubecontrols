@@ -168,6 +168,7 @@
 
 #youtubecontrolsDashboardDeck > li span.ytcDashboardItemHeader input.ytcDashboardItemVolumeBar:hover {
 	height: 10px;
+	top: 45px;
 	left: -35px;
 }
 

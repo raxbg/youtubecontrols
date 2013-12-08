@@ -194,7 +194,7 @@ function updateTabCard(tab){
 	card.querySelector('h3.ytcDashboardItemTitle').innerHTML = tab.title;
 	card.querySelector('span.rowShareUrl').innerHTML = tab.share_url;
 	card.querySelector('input.ytcDashboardItemProgressBar').value = parseInt(tab.currentTime);
-	card.querySelector('input.ytcDashboardItemVolumeBar').value = parseInt(tab.volume);
+	card.querySelector('input.ytcDashboardItemVolumeBar').value = tab.volume;
 	
 	//Convert progress and duration to human readable strings
 	var duration = parseInt(tab.duration);
