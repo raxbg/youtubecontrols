@@ -9,7 +9,7 @@ document.addEventListener('keyup', function(e){
 });
 
 document.addEventListener('mousedown', function(e){
-	if (!e.target.classList.contains('rowShareUrl') && !e.target.classList.contains('ytcDashboardItemProgressBar') && !e.target.classList.contains('ytcDashboardItemVolumeBar')) {
+	if (ytcDashboard.getState() == 'opened' && !e.target.classList.contains('rowShareUrl') && !e.target.classList.contains('ytcDashboardItemProgressBar') && !e.target.classList.contains('ytcDashboardItemVolumeBar')) {
 		e.preventDefault();
 		selectStartTime = e.timeStamp;
 		inSelectMode = true;

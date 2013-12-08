@@ -33,6 +33,7 @@ ytcDashboard = (function(){
 				state = 'closed';
 			}
 		},
+		getState: function() { return state; },
 		getOverlay: function() { return ytcOverlay; },
 		getCardDeck: function() { return ytcDashboardItemList; },
 		getCloseSelectedTabsBtn: function() { return ytcCloseSelectedTabsBtn; },
