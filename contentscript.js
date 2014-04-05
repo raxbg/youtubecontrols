@@ -29,7 +29,7 @@ function loadTabInfo(){
 		});
 	}
 
-	if (document.getElementById('playlist').innerHTML.replace(/\s*/g, '').length > 0) {
+	if (document.querySelector('a.next-playlist-list-item')) {
 		playlist = true;
 	}
 
@@ -48,10 +48,22 @@ function loadTabInfo(){
 		videoTitle = 'Unknown';
 	}
 	videoShareUrl = 'http://youtu.be/' + location.search.match(/v\=([^\&]*)/)[1];
-	videoDuration = parseInt(videoObj.duration);
-	videoCurrentTime = parseInt(videoObj.currentTime);
-	videoVolume = videoObj.volume;
+	try {
+		videoDuration = parseInt(videoObj.duration);
+		videoCurrentTime = parseInt(videoObj.currentTime);
+		videoVolume = videoObj.volume;
+	} catch(err) {
+		videoDuration = 0;
+		videoCurrentTime = 0;
+		videoVolume = 0;
+	}
 }
+
+document.addEventListener('DOMNodeRemoved', function(e) {
+	if(e.target.id == 'progress') {//video changed and the new one has finished loading
+		initTab();
+	}
+});
 
 function initTab() {
 	loadTabInfo();
@@ -106,28 +118,46 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 	if(typeof msg.cmd != 'undefined' && (videoObj != null || playlist)) {
 		switch (msg.cmd) {
 			case 'play':
-				videoObj.play();
+				try {
+					videoObj.play();
+				} catch(err) {
+				}
 				break;
 			case 'pause':
-				videoObj.pause();
+				try {
+					videoObj.pause();
+				} catch(err) {
+				}
 				break;
 			case 'volumeup':
-				videoObj.volume += 0.1;
+				try {
+					videoObj.volume += 0.1;
+				} catch(err) {
+				}
 				break;
 			case 'volumedown':
-				videoObj.volume -= 0.1;
+				try {
+					videoObj.volume -= 0.1;
+				} catch(err) {
+				}
 				break;
 			case 'playlistnext':
-				if (playlist) {document.getElementById('watch7-playlist-bar-next-button').click();}
+				if (playlist) {document.querySelector('a.next-playlist-list-item').click();}
 				break;
 			case 'playlistprev':
-				if (playlist) {document.getElementById('watch7-playlist-bar-prev-button').click();}
+				if (playlist) {document.querySelector('a.prev-playlist-list-item').click();}
 				break;
 			case 'rewind':
-				videoObj.currentTime = msg.toTime;
+				try {
+					videoObj.currentTime = msg.toTime;
+				} catch(err) {
+				}
 				break;
 			case 'changeVolume':
-				videoObj.volume = msg.toVolume;
+				try {
+					videoObj.volume = msg.toVolume;
+				} catch(err) {
+				}
 				break;
 		}
 		sendResponse({});
