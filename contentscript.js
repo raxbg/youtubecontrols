@@ -11,13 +11,28 @@ var videoVolume = 0;
 var isTabInfoUpdated = true;
 var lastTimeupdate = 0;
 
+function updateVideoState() {
+	if (document.querySelector('div.ytp-button-pause')) {
+		videoState = 'playing';
+	} else if (document.querySelector('div.ytp-button-play')) {
+		videoState = 'paused';
+	} else if (document.querySelector('div.ytp-button-replay')) {
+		videoState = 'ended';
+	} else {
+		isTabInfoUpdated = false;
+		videoState = 'paused';
+	}
+}
+
+function reportVideoState() {
+	updateVideoState();
+	chrome.runtime.sendMessage({playerStateChange: true, state: videoState}, function(response){});
+}
+
 function loadTabInfo(){
 	if (document.getElementsByTagName('video').length > 0) {
 		videoObj = document.getElementsByTagName('video')[0];
 
-		videoObj.addEventListener('pause', function() { chrome.runtime.sendMessage({playerStateChange: true, state: 'paused'}, function(response){}); });
-		videoObj.addEventListener('play', function() { chrome.runtime.sendMessage({playerStateChange: true, state: 'playing'}, function(response){}); });
-		videoObj.addEventListener('ended', function() { chrome.runtime.sendMessage({playerStateChange: true, state: 'ended'}, function(response){}); });
 		videoObj.addEventListener('timeupdate', function(e) {
 			if ((e.timeStamp - lastTimeupdate) >= 100) {
 				videoDuration = parseInt(videoObj.duration);
@@ -34,12 +49,7 @@ function loadTabInfo(){
 	}
 
 	isTabInfoUpdated = true;
-	try {
-		videoState = (videoObj.paused) ? 'paused' : 'playing';
-	} catch (err) {
-		isTabInfoUpdated = false;
-		videoState = 'paused';
-	}
+	updateVideoState();
 	videoImage = '//img.youtube.com/vi/' + location.search.match(/v\=([^\&]*)/)[1] + '/0.jpg';
 	try {
 		videoTitle = document.getElementById('watch-headline-title').innerText;
@@ -85,6 +95,7 @@ function updateTabInfo() {
 	if (!isTabInfoUpdated) {
 		loadTabInfo();
 	} else {
+		updateVideoState();
 		chrome.runtime.sendMessage({
 			updateTabInfo: true,
 			state: videoState,
@@ -111,6 +122,16 @@ if (document.readyState == 'complete') {
 } else {
 	window.addEventListener('load', function(){
 		initTab();
+		//Apparantly we cannot rely on the player's state change events, so we will use this ugly hack
+		var stateChangeObserver = new window.MutationObserver(function(mutation) {
+			for (x in mutation) {
+				if (mutation[x].attributeName == 'class') {
+					reportVideoState();
+					break;
+				}
+			}
+		});
+		stateChangeObserver.observe(document.querySelector('div.ytp-button-play,div.ytp-button-replay,div.ytp-button-pause'), {attributes: true});
 	});
 }
 
@@ -120,12 +141,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 			case 'play':
 				try {
 					document.querySelector('div.ytp-button-play,div.ytp-button-replay').click();
+					updateVideoState();
 				} catch(err) {
 				}
 				break;
 			case 'pause':
 				try {
 					document.querySelector('div.ytp-button-pause').click();
+					updateVideoState();
 				} catch(err) {
 				}
 				break;
