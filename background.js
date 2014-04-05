@@ -214,7 +214,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 			};
 		})(sender.tab.id, msg.state, msg.isPlaylist, msg.title, msg.image, msg.share_url, msg.duration, msg.currentTime, msg.volume);
 		for (x in ytbActiveTabs) {
-			if (ytbActiveTabs[x].id == tabId) {
+			if (ytbActiveTabs[x].id == sender.tab.id) {
 				ytbActiveTabs.splice(x, 1);
 				break;
 			}
