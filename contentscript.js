@@ -10,6 +10,7 @@ var videoCurrentTime = 0;
 var videoVolume = 0;
 var isTabInfoUpdated = true;
 var lastTimeupdate = 0;
+var isPlayPauseBtnObserved = false;
 
 function updateVideoState() {
 	if (document.querySelector('div.ytp-button-pause')) {
@@ -70,7 +71,7 @@ function loadTabInfo(){
 }
 
 document.addEventListener('DOMNodeRemoved', function(e) {
-	if(e.target.id == 'progress') {//video changed and the new one has finished loading
+	if(e.target.id == 'progress') {//some page finished loading
 		initTab();
 	}
 });
@@ -89,6 +90,7 @@ function initTab() {
 		volume: videoVolume
 	}, function(response){});
 	tabRegistered = true;
+	observePlayPauseBtn();
 }
 
 function updateTabInfo() {
@@ -117,21 +119,32 @@ function domModified() {
 	}, 300);
 }
 
+function observePlayPauseBtn() {
+	//Apparantly we cannot rely on the player's state change events, so we will use this ugly hack
+	if (!isPlayPauseBtnObserved) {
+		var target = document.querySelector('div.ytp-button-play,div.ytp-button-replay,div.ytp-button-pause');
+		if (target) {
+			var stateChangeObserver = new window.MutationObserver(function(mutation) {
+				for (x in mutation) {
+					if (mutation[x].attributeName == 'class') {
+						reportVideoState();
+						break;
+					}
+				}
+			});
+			stateChangeObserver.observe(target, {attributes: true});
+			isPlayPauseBtnObserved = true;
+		}
+	} else {
+		isPlayPauseBtnObserved = false;
+	}
+}
+
 if (document.readyState == 'complete') {
 	initTab();
 } else {
 	window.addEventListener('load', function(){
 		initTab();
-		//Apparantly we cannot rely on the player's state change events, so we will use this ugly hack
-		var stateChangeObserver = new window.MutationObserver(function(mutation) {
-			for (x in mutation) {
-				if (mutation[x].attributeName == 'class') {
-					reportVideoState();
-					break;
-				}
-			}
-		});
-		stateChangeObserver.observe(document.querySelector('div.ytp-button-play,div.ytp-button-replay,div.ytp-button-pause'), {attributes: true});
 	});
 }
 
