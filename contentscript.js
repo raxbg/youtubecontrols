@@ -119,13 +119,13 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 		switch (msg.cmd) {
 			case 'play':
 				try {
-					videoObj.play();
+					document.querySelector('div.ytp-button-play,div.ytp-button-replay').click();
 				} catch(err) {
 				}
 				break;
 			case 'pause':
 				try {
-					videoObj.pause();
+					document.querySelector('div.ytp-button-pause').click();
 				} catch(err) {
 				}
 				break;
